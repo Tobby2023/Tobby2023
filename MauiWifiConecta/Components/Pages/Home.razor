@@ -1,0 +1,75 @@
+﻿@page "/home"
+@inject IPSercice IPService
+@using System.Net
+
+<h1>IPs:</h1>
+@if(IPService.OutrosIPs != null)
+{
+    <InputSelect @bind-Value="estatico" class="form-control my-1 rounded-0">
+        @foreach (var item in IPs)
+        {
+            @* if (item == IPService.MeuIP)
+            {
+                <option selected value="@item.ToString()">
+                    Meu IP: @item | @item.Address | @item.AddressFamily
+                </option>
+            }
+            else if (item == IPService.IPServidor)
+            {
+                <option value="@item.ToString()">
+                    Servidor: @item | @item.Address | @item.AddressFamily
+                </option>
+            }
+            else
+            {
+                <option value="@item.ToString()">
+                    Cliente: @item | @item.Address | @item.AddressFamily
+                </option>
+            } *@
+            <option value="@item.ToString()">
+                Cliente: @item | @item.Address | @item.AddressFamily
+            </option>
+        }
+
+        <option value="@IPService.IPServidor.ToString()">
+            Servidor: @IPService.IPServidor | @IPService.IPServidor.Address | @IPService.IPServidor.AddressFamily
+        </option>
+    </InputSelect>
+}
+
+<div class="m-2">
+    <a class="btn btn-primary btn-sm" href="servidor/@estatico">Modo Servidor</a>
+    <a class="btn btn-success btn-sm" href="cliente/@estatico">Modo Cliente</a>
+</div>
+
+
+
+@code {
+    private string estatico { get; set; } = string.Empty;
+    private IPAddress IP { get; set; } = IPSercice.GetLocalIPAddress();
+    private List<IPAddress> IPs { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            //IPService.IPServidor = IPService.GetGatewayAddress();
+            IPs = IPService.GetLocalIPs();
+            IP = IPService.MeuIP ?? IP;
+            estatico = IP.ToString();
+        }
+        catch (Exception ex)
+        {
+            Task.Run(async () => await App.Current!.MainPage!.DisplayAlert("Erro", ex.Message, "Ok"));
+        }
+
+    }
+
+
+    private async Task<string> OnSelectionChanged(string value)
+    {
+        estatico = value;
+        await App.Current!.MainPage!.DisplayAlert("Select", "Valor escolhido: " + value, "Ok");
+        return value;
+    }
+}

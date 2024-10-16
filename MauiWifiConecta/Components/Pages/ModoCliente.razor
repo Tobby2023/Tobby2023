@@ -1,0 +1,40 @@
+﻿@page "/cliente"
+@page "/cliente/{IP}"
+@inject WebSocketClientService Cliente
+
+<h3>Modo Cliente: @IP <button class="btn btn-sm btn-primary" @onclick="Atualiza">Atualizar</button></h3>
+
+<div class="m-2">
+    <InputText @bind-Value="Mensagem" class="form-control rounded-0" />
+    <button @onclick="EnviarMensagem" class="btn btn-dark btn-sm">Enviar</button>
+</div>
+
+<b>@Mensagem</b>
+
+@code {
+    public string Mensagem { get; set; } = string.Empty;
+    [Parameter]
+    public string IP { get; set; } = "*";
+    public int Port { get; set; } = 7081;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IP = (string.IsNullOrEmpty(IP) ? (await App.Current!.MainPage!.DisplayPromptAsync("IP Indefinido", "Digite manualmente seu IP:", "OK", "CANCELA")) : IP);
+        await Cliente.ConnectToServerAsync(IP, Port);
+        _ = Task.Run(Atualiza);
+    }
+
+    private async Task EnviarMensagem()
+    {
+        await Cliente.SendMessageAsync(Mensagem);
+    }
+
+    private async Task Atualiza()
+    {
+        while (true)
+        {
+            Mensagem = await Cliente.ReceiveMessageAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}

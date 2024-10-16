@@ -1,0 +1,95 @@
+﻿@page "/jogo/nante/{Modo}/{Index:int}"
+@inject HostConectado MyHost
+@inject ConectorSocket MySocket
+
+<h3>Nº Conectado @MySocket.TodosSocket.Count</h3>
+
+@if (IsIniciado)
+{
+    <input type="text" @bind-value="texto" class="form-control form-control-sm" />
+    <button @onclick="@(() => MySocket.SendMessageAsync(texto))" class="btn btn-sm btn-dark"><i class="bi bi-send-fill"></i></button>
+    <p class="text-muted mt-5">@Mensagem</p>
+}
+else
+{
+
+    <button @onclick="IniciarCliente" class="btn btn-sm btn-danger"><i class="bi bi-power"></i></button>
+}
+
+
+@code {
+    [Parameter]
+    public string Modo { get; set; } = string.Empty;
+    [Parameter]
+    public int Index { get; set; } = 0;
+    private string texto = string.Empty;
+    private bool IsIniciado = false;
+
+    public string Mensagem { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        bool result = false;
+        if (Modo == "Servidor")
+        {
+            result = await MySocket.IniciarServidor(Index);
+            await SegundoPlanoServidor(result);
+        }
+        else if (Modo == "Cliente")
+        {
+            result = await MySocket.ConectarServidor(Index);
+            IsIniciado = !IsIniciado;
+            _ = Task.Run(() => SegundoPlanoCliente(result));
+        }
+
+        if (!result)
+        {
+            URL.NavigateTo("");
+        }
+    }
+
+    private async Task IniciarCliente()
+    {
+        try
+        {
+            MySocket.EuSocket = new System.Net.WebSockets.ClientWebSocket();
+            await MySocket.EuSocket.ConnectAsync(new Uri($"ws://{MyHost.MeuHost[0]}:1909/"), CancellationToken.None);
+            IsIniciado = !IsIniciado;
+            _ = Task.Run(() => SegundoPlanoCliente(true));
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            await App.Current!.MainPage!.DisplayAlert("Erro", "Ocorreu um erro: " + ex.Message, "Ok");
+        }
+    }
+
+    private async Task SegundoPlanoServidor(bool resultado)
+    {
+        while (resultado)
+        {
+            var context = await MySocket.Servidor!.GetContextAsync();
+            if (context.Request.IsWebSocketRequest)
+            {
+                var wsContext = await context.AcceptWebSocketAsync(null);
+                var socket = wsContext.WebSocket;
+                MySocket.TodosSocket.Add(socket);
+
+                // Opcional: Mensagem de notificação ao conectar um cliente
+                await MySocket.BroadcastToAllClientsAsync($"Novo cliente conectado: {socket.GetHashCode()}");
+
+                // Processa as mensagens recebidas do cliente
+                _ = Task.Run(() => MySocket.HandleClientSocketAsync(socket));
+            }
+        }
+    }
+
+    private async Task SegundoPlanoCliente(bool resultado)
+    {
+        while (resultado)
+        {
+            Mensagem = await MySocket.ReceiveMessageAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}

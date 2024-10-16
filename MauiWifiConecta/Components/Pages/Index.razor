@@ -1,0 +1,37 @@
+﻿@page "/"
+
+<div class="col-12 d-flex justify-content-between mb-4">
+    <button class="p-1 btn btn-primary btn-sm rounded-0" disabled><i class="bi bi-caret-left-fill"></i></button>
+    <button @onclick="@(() => URL.NavigateTo($"nante/Cliente/0"))" class="btn btn-sm btn-primary rounded-0 @(desablitarHost)">Nenhum grupo encontrado!!</button>
+    <button class="p-1 btn btn-primary btn-sm rounded-0" disabled><i class="bi bi-caret-right-fill"></i></button>
+</div>
+<div class="col-12">
+    <button @onclick="@(() => URL.NavigateTo($"nante/Servidor/0"))" class="btn btn-sm btn-primary rounded-0 col-12 @(desablitarMeuHost)">Host</button>
+</div>
+
+@code {
+    string desablitarHost = string.Empty, desablitarMeuHost = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        desablitarHost = (HostService.HostEncontrado.Count == 0 ? "disabled" : string.Empty);
+        desablitarMeuHost = (HostService.MeuHost.Count == 0 ? "disabled" : string.Empty);
+
+
+        string strings = string.Empty;
+        HostService.HostEncontrado.ForEach(h =>
+        {
+            strings += $"{h}\n";
+        });
+
+        await App.Current!.MainPage!.DisplayAlert("Host Encontrados " + HostService.HostEncontrado.Count, strings, "Ok");
+        strings = string.Empty;
+
+        HostService.MeuHost.ForEach(h =>
+        {
+            strings += $"{h}\n";
+        });
+
+        await App.Current!.MainPage!.DisplayAlert("Meus Host Encontrados " + HostService.MeuHost.Count, strings, "Ok");
+    }
+}

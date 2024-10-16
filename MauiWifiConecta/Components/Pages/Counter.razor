@@ -1,0 +1,27 @@
+﻿@page "/clientet"
+@*inject ClienteService ClienteService
+
+<PageTitle>Cliente</PageTitle>
+
+<h3>Cliente</h3>
+
+<button @onclick="EnviarDados">Enviar Dados</button>
+
+<p>@responseMessage</p>
+
+@code {
+    private string responseMessage = "Nenhuma mensagem recebida.";
+
+    private async Task EnviarDados()
+    {
+        var data = new Dictionary<string, string>
+        {
+            { "NomeDispositivo", "Dispositivo X" },
+            { "Mensagem", "Olá, servidor!" }
+        };
+
+        await ClienteService.EnviarDadosParaServidor(data);
+        responseMessage = "Dados enviados com sucesso!";
+    }
+}
+*@

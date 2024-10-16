@@ -1,0 +1,27 @@
+﻿@page "/servidort"
+@*inject SocketServerService ServidorService
+
+<PageTitle>Servidor</PageTitle>
+
+<h3>Servidor</h3>
+
+<button @onclick="IniciarServidor">Iniciar Servidor</button>
+<button @onclick="PararServidor">Parar Servidor</button>
+
+<p>@statusMessage</p>
+
+@code {
+    private string statusMessage = "Servidor não iniciado";
+
+    private void IniciarServidor()
+    {
+        ServidorService.StartSocketServer();
+        statusMessage = "Servidor Iniciado";
+    }
+
+    private void PararServidor()
+    {
+        ServidorService.StopSocketServer();
+        statusMessage = "Servidor Parado";
+    }
+}*@

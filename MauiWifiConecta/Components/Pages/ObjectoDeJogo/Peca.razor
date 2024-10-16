@@ -1,0 +1,131 @@
+﻿<diV class="position-absolute z-1" style="top: 5px; left: 5px; font-size: 16pt;">
+    <div class="position-relative @Aparece">
+        <div class="d-flex justify-content-center position-absolute z-3" style="top: -45px; left: -25px">
+            <button @onclick="@(() => Andar(Dados.Dados1))" class="@Aparece1 btn-primary btn-sm"><i class="bi bi-dice-@Dados.Dados1-fill"></i></button>
+            <button @onclick="() => Andar(Dados.Dados2)" class="@Aparece2 btn-primary btn-sm"><i class="bi bi-dice-@Dados.Dados2-fill"></i></button>
+            <button @onclick="() => Andar(10)" class="@Aparece10 btn-primary btn-sm"><i class="bi bi-flag-fill"></i></button>
+            <button @onclick="() => Andar(20)" class="@Aparece20 btn-primary btn-sm"><i class="bi bi-reply-all-fill"></i></button>
+            <button @onclick="() => Andar(Total)" class="@Aparece12 btn-primary btn-sm"><i class="bi bi-capslock-fill"></i></button>
+        </diV>
+    </diV>
+    <i @onclick="Aparecer" style="color: @(Aparencia.Color.ToRgbaHex(false))" class="bi bi-@Aparencia.Peca"></i>
+</diV>
+
+@code {
+    [Parameter]
+    public Nante Aparencia { get; set; }
+    [Parameter]
+    public List<NanteCaminho> Caminhos { get; set; }
+    [Parameter]
+    public Dados Dados { get; set; }
+    [Parameter]
+    public int Atual { get; set; }
+
+    private int Total { get; set; } = 0;
+
+    private string Aparece1 { get; set; } = "d-none";
+    private string Aparece2 { get; set; } = "d-none";
+    private string Aparece12 { get; set; } = "d-none";
+    private string Aparece10 { get; set; } = "d-none";
+    private string Aparece20 { get; set; } = "d-none";
+
+    private string Aparece { get; set; } = "d-none";
+
+    private void Aparecer()
+    {
+        StateHasChanged();
+        // App.Current!.MainPage!.DisplayAlert("Dados", "Dados ["+Dados.Dados1+" : "+Dados.Dados2+"]", "Ok");
+        Aparece10 = (Dados.IsContagem10 > 0 ? string.Empty : "d-none");
+        Aparece20 = (Dados.IsContagem20 > 0 ? string.Empty : "d-none");
+        Aparece1 = (Dados.Dados1 <= 0 ? "d-none" : VerificarContagem(Dados.Dados1));
+        Aparece2 = (Dados.Dados2 <= 0 ? "d-none" : VerificarContagem(Dados.Dados2));
+        Aparece12 = (((Aparece1 == "d-none") || (Aparece2 == "d-none")) ? "d-none" : string.Empty);
+        if (!string.IsNullOrEmpty(Aparece1) && !string.IsNullOrEmpty(Aparece2) && !string.IsNullOrEmpty(Aparece12)
+         && !string.IsNullOrEmpty(Aparece10) && !string.IsNullOrEmpty(Aparece20))
+        {
+            App.Current!.MainPage!.DisplayAlert("Sem opções", "Impossivel jogar!", "Ok");
+        }
+        else
+        {
+            Total = (Dados.Dados1 + Dados.Dados2 + (Dados.IsContagem10 > 0 ? (10 * Dados.IsContagem10) : 0) + (Dados.IsContagem20 > 0 ? (20 * Dados.IsContagem20) : 0));
+            Aparece = (Aparece == "d-none" ? "" : "d-none");
+        }
+    }
+
+    private async void Andar(int numPasso)
+    {
+
+        SobreDado(Dados, numPasso);
+
+        if ((Aparencia.Passos < 75) && (Aparencia.Passos+numPasso > 75))
+        {
+            var resposta = await App.Current!.MainPage!.DisplayAlert("O que desejas", "Desejas girar o mundo?", "Sim", "Não");
+            Aparencia.Passos += numPasso;
+            if (resposta)
+            {
+                Aparencia.Passos -= 80;
+            }
+        }
+        else
+        {
+            Aparencia.Passos += numPasso;
+        }
+
+        Aparencia.Andar(Caminhos, (numPasso + Atual), Dados);
+        numPasso = 0;
+    }
+
+    private string VerificarContagem(int valor)
+    {
+        //App.Current!.MainPage!.DisplayAlert("Trapaceou", "Passos: " + Aparencia.Passos + "\nPosição: " + valor + "\nPosição Atual: " + Aparencia.Casa, "Ok");
+        if (Aparencia.Passos >= 75)
+        {
+            //25, 55, 85, 115
+            if (Aparencia.Casa < 25 && (Aparencia.Casa + valor) > 25)
+            {
+                return "d-none";
+            }
+            else if (Aparencia.Casa < 55 && (Aparencia.Casa + valor) > 55)
+            {
+                return "d-none";
+            }
+            else if (Aparencia.Casa < 85 && (Aparencia.Casa + valor) > 85)
+            {
+                return "d-none";
+            }
+            else if (Aparencia.Casa < 115 && (Aparencia.Casa + valor) > 115)
+            {
+                return "d-none";
+            }
+        }
+        return string.Empty;
+    }
+
+    private void SobreDado(Dados Dados, int Passo)
+    {
+
+        if (Total == Passo)
+        {
+            Dados.Dados1 = (Dados.Dados1 == 6 ? -1 : 0);
+            Dados.Dados2 = (Dados.Dados2 == 6 ? -1 : 0);
+            Dados.IsContagem10 -= (Dados.IsContagem10 > 0 ? Dados.IsContagem10 : 0);
+            Dados.IsContagem20 -= (Dados.IsContagem20 > 0 ? Dados.IsContagem20 : 0);
+        }
+        else if (Dados.Dados1 == Passo)
+        {
+            Dados.Dados1 = (Dados.Dados1 == 6 ? -1 : 0);
+        }
+        else if (Dados.Dados2 == Passo)
+        {
+            Dados.Dados2 = (Dados.Dados2 == 6 ? -1 : 0);
+        }
+        else if (10 == Passo)
+        {
+            Dados.IsContagem10 -= 1;
+        }
+        else if (20 == Passo)
+        {
+            Dados.IsContagem20 -= 1;
+        }
+    }
+}

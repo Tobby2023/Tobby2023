@@ -1,0 +1,35 @@
+﻿
+<div style="height: 500px" class="col-12 border-1 border-dark p-2 overflow-x-scroll overflow-y-scroll">
+    <table>
+        @for (int linha = -15; linha <= 35; linha++)
+        {
+            <tr>
+                @for (int coluna = -15; coluna <= 35; coluna++)
+                {
+                    var caminho = Caminhos.Find(f => f.Linha == linha && f.Coluna == coluna);
+                    if (caminho != null)
+                    {
+                        <td style="background-color: lightgray; font-size: 8pt">
+                            <div class="text-center text-muted position-relative p-2"
+                                 style="background-color: @(caminho.Color.ToRgbaHex(false))">
+                                @caminho.Valor
+                                @if (caminho.Nantes.Count > 0) foreach (var nante in caminho.Nantes)
+                                {
+                                        <Peca Dados="Dados" Aparencia="nante" Caminhos="Caminhos" Atual="Caminhos.IndexOf(caminho)" />
+                                }
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="bg-info"></td>
+                    }
+                }
+            </tr>
+        }
+    </table>
+</div>
+
+<div class="col-12 p-2">
+    <button @onclick="RolarDados" class="btn-sm btn-primary">Rolar [@Dados.Dados1 : @Dados.Dados2]</button>
+</div>
