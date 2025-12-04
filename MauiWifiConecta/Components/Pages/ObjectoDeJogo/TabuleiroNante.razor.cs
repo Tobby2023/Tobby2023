@@ -9,15 +9,21 @@ namespace MauiWifiConecta.Components.Pages.ObjectoDeJogo
 
         protected override void OnInitialized()
         {
-            Nante nante1 = new() { Color = Colors.DarkBlue, Peca = "record-circle-fill" };
-            Nante nante2 = new() { Color = Colors.DarkGreen, Peca = "record-circle-fill" };
-            Nante nante3 = new() { Color = Colors.DarkRed, Peca = "record-circle-fill" };
-            Nante nante4 = new() { Color = Colors.DarkGrey, Peca = "record-circle-fill" };
+            Nante nante11 = new() { Color = Colors.DarkBlue, Peca = "record-circle-fill" };
 
-            Caminhos[0].ColocarNante(nante1, 0);
-            Caminhos[30].ColocarNante(nante2, 30);
-            Caminhos[60].ColocarNante(nante3, 60);
-            Caminhos[90].ColocarNante(nante4, 90);
+            Nante nante21 = new() { Color = Colors.DarkGreen, Peca = "record-circle-fill" };
+
+            Nante nante31 = new() { Color = Colors.DarkRed, Peca = "record-circle-fill" };
+
+            Nante nante41 = new() { Color = Colors.DarkGrey, Peca = "record-circle-fill" };
+
+            Caminhos[0].ColocarNante(nante11, 0);
+
+            Caminhos[30].ColocarNante(nante21, 30);
+
+            Caminhos[60].ColocarNante(nante31, 60);
+
+            Caminhos[90].ColocarNante(nante41, 90);
 
             Task.Run(Atualizar);
         }
@@ -32,7 +38,7 @@ namespace MauiWifiConecta.Components.Pages.ObjectoDeJogo
         {
             while (true)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromSeconds(0.5));
                 await InvokeAsync(StateHasChanged);
             }
         }

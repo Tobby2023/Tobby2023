@@ -33,28 +33,29 @@
 
     private void Aparecer()
     {
-        StateHasChanged();
         // App.Current!.MainPage!.DisplayAlert("Dados", "Dados ["+Dados.Dados1+" : "+Dados.Dados2+"]", "Ok");
         Aparece10 = (Dados.IsContagem10 > 0 ? string.Empty : "d-none");
         Aparece20 = (Dados.IsContagem20 > 0 ? string.Empty : "d-none");
         Aparece1 = (Dados.Dados1 <= 0 ? "d-none" : VerificarContagem(Dados.Dados1));
         Aparece2 = (Dados.Dados2 <= 0 ? "d-none" : VerificarContagem(Dados.Dados2));
         Aparece12 = (((Aparece1 == "d-none") || (Aparece2 == "d-none")) ? "d-none" : string.Empty);
+
         if (!string.IsNullOrEmpty(Aparece1) && !string.IsNullOrEmpty(Aparece2) && !string.IsNullOrEmpty(Aparece12)
          && !string.IsNullOrEmpty(Aparece10) && !string.IsNullOrEmpty(Aparece20))
         {
-            App.Current!.MainPage!.DisplayAlert("Sem opções", "Impossivel jogar!", "Ok");
+            CommunityToolkit.Maui.Alerts.Toast.Make("Impossivel jogar!", CommunityToolkit.Maui.Core.ToastDuration.Long).Show();
         }
         else
         {
             Total = (Dados.Dados1 + Dados.Dados2 + (Dados.IsContagem10 > 0 ? (10 * Dados.IsContagem10) : 0) + (Dados.IsContagem20 > 0 ? (20 * Dados.IsContagem20) : 0));
             Aparece = (Aparece == "d-none" ? "" : "d-none");
         }
+        StateHasChanged();
     }
 
     private async void Andar(int numPasso)
     {
-
+        Aparece = (Aparece == "d-none" ? "" : "d-none");
         SobreDado(Dados, numPasso);
 
         if ((Aparencia.Passos < 75) && (Aparencia.Passos+numPasso > 75))

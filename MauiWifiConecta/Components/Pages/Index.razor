@@ -1,16 +1,37 @@
 ﻿@page "/"
-
-<div class="col-12 d-flex justify-content-between mb-4">
-    <button class="p-1 btn btn-primary btn-sm rounded-0" disabled><i class="bi bi-caret-left-fill"></i></button>
-    <button @onclick="@(() => URL.NavigateTo($"nante/Cliente/0"))" class="btn btn-sm btn-primary rounded-0 @(desablitarHost)">Nenhum grupo encontrado!!</button>
-    <button class="p-1 btn btn-primary btn-sm rounded-0" disabled><i class="bi bi-caret-right-fill"></i></button>
+<div class="p-5">
+    <div class="col-12 d-flex justify-content-between mb-4">
+        <button class="p-1 btn btn-primary btn-sm rounded-0" disabled><i class="bi bi-caret-left-fill"></i></button>
+        <button @onclick="@(() => URL.NavigateTo($"nante/Cliente/0"))" class="btn btn-sm btn-primary rounded-0 @(desablitarHost)">Nenhum grupo encontrado!!</button>
+        <button class="p-1 btn btn-primary btn-sm rounded-0" disabled><i class="bi bi-caret-right-fill"></i></button>
+    </div>
+    <div class="col-12">
+        <button @onclick="@(() => URL.NavigateTo($"nante/Servidor/0"))" class="btn btn-sm btn-primary rounded-0 col-12 @(desablitarMeuHost)">Host</button>
+    </div>
 </div>
-<div class="col-12">
-    <button @onclick="@(() => URL.NavigateTo($"nante/Servidor/0"))" class="btn btn-sm btn-primary rounded-0 col-12 @(desablitarMeuHost)">Host</button>
-</div>
+<br />
+<button class="btn btn-primary" @onclick="OpenOtherApp">Ligar</button>
 
 @code {
-    string desablitarHost = string.Empty, desablitarMeuHost = string.Empty;
+    string desablitarHost = string.Empty;
+    string desablitarMeuHost = string.Empty;
+    string uri = $"outroapp://detalhes?id=123";
+
+    public async Task OpenOtherApp()
+    {
+        var appUri = "outroapp://detalhes?id=123"; // Substitua pelo URI ou esquema correto do outro app
+        var supportsUri = await Launcher.CanOpenAsync(uri);
+
+        if (supportsUri)
+        {
+            await Launcher.OpenAsync(uri);
+        }
+        else
+        {
+            // Caso o app não esteja instalado ou o URI não seja suportado
+            await Shell.Current.DisplayAlert("Erro", "O aplicativo não está instalado.", "OK");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

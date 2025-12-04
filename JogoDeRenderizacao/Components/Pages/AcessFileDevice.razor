@@ -1,0 +1,75 @@
+﻿@page "/file"
+<h3>AcessFileDevice</h3>
+
+<botton class="btn btn-success" @onclick="ReadFileFromAndroidFolder">Verificar</botton>
+<br />
+<span>@result</span>
+<br />
+<img src="@imageSrc" alt="Escolher imagem" />
+<br />
+
+<fieldset>
+    <legend>AndroidManifest.xml:</legend>
+    <pre style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;">
+    <code>
+            &lt;application android:requestLegacyExternalStorage="true" ...&gt;
+                &lt;uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /&gt;
+                &lt;uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /&gt;
+            &lt;/application&gt;
+        </code>
+    </pre>
+</fieldset>
+
+<fieldset>
+    <legend>Page.razor.cs:</legend>
+    <pre style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9;">
+        <code>
+        public async Task ReadFileFromAndroidFolder()
+        {
+            try
+            {
+                var writeStatus = await Permissions.RequestAsync&lt;Permissions.StorageWrite&gt;();
+                var readStatus = await Permissions.RequestAsync&lt;Permissions.StorageRead&gt;();
+
+                if (readStatus != PermissionStatus.Granted || writeStatus != PermissionStatus.Granted)
+                {
+                    // Permissões negadas
+                    // Console.WriteLine("Permissões de armazenamento negadas.");
+                    await App.Current!.MainPage!.DisplayAlert("Error", "Permissões de armazenamento negadas.", "Ok");
+                }
+
+                string filePath = string.Empty;
+#if ANDROID
+                var externalStoragePath = Android.OS.Environment.ExternalStorageDirectory!.AbsolutePath;
+                filePath = Path.Combine(externalStoragePath, "Android", fileName);
+#else
+            var androidFolderPath = Path.Combine(FileSystem.AppDataDirectory, "Android");
+            filePath = Path.Combine(androidFolderPath, fileName);
+#endif
+                result = filePath + "\n";
+                if (File.Exists(filePath))
+                {
+                    var bytes = File.ReadAllBytes(filePath);
+                    //result += await File.ReadAllTextAsync(filePath);
+
+                    // Converte os bytes para Base64
+                    var base64 = Convert.ToBase64String(bytes);
+
+                    // Monta a URL da imagem
+                    imageSrc = $"data:image/png;base64,{base64}";
+
+                    await InvokeAsync(StateHasChanged);
+                }
+                else
+                {
+                    result += "Arquivo não encontrado.";
+                }
+            }
+            catch (Exception ex)
+            {
+                await App.Current!.MainPage!.DisplayAlert("Error", ex.Message, "Ok");
+            }
+        }
+        </code>
+    </pre>
+</fieldset>

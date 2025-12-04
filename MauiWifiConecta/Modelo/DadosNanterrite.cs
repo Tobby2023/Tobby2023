@@ -108,7 +108,7 @@
         {
             List<NanteCaminho> caminhos =
             [
-                new() { Linha = 12, Coluna = 5, Valor = "F", Color = Colors.LightGreen },
+                new() { Linha = 12, Coluna = 5, Valor = "F", Color = Colors.LightGreen }, // 0
                 new() { Linha = 12, Coluna = 6, Valor = "1", Color = color },
                 new() { Linha = 12, Coluna = 7, Valor = "2", Color = color },
                 new() { Linha = 12, Coluna = 8, Valor = "3", Color = color },
@@ -142,7 +142,7 @@
                 new() { Linha = 18, Coluna = 12, Valor = "19", Color = color },
 
 
-                new() { Linha = 17, Coluna = 12, Valor = "F", Color = Colors.LightGreen },
+                new() { Linha = 17, Coluna = 12, Valor = "F", Color = Colors.LightGreen }, // 30
                 new() { Linha = 16, Coluna = 12, Valor = "1", Color = color },
                 new() { Linha = 15, Coluna = 12, Valor = "2", Color = color },
                 new() { Linha = 14, Coluna = 12, Valor = "3", Color = color },
@@ -176,7 +176,7 @@
                 new() { Linha = 10, Coluna = 18, Valor = "19", Color = color },
 
 
-                new() { Linha = 10, Coluna = 17, Valor = "F", Color = Colors.LightGreen },
+                new() { Linha = 10, Coluna = 17, Valor = "F", Color = Colors.LightGreen }, // 60
                 new() { Linha = 10, Coluna = 16, Valor = "1", Color = color },
                 new() { Linha = 10, Coluna = 15, Valor = "2", Color = color },
                 new() { Linha = 10, Coluna = 14, Valor = "3", Color = color },
@@ -210,7 +210,7 @@
                 new() { Linha = 4, Coluna = 10, Valor = "19", Color = color },
 
 
-                new() { Linha = 5, Coluna = 10, Valor = "F", Color = Colors.LightGreen },
+                new() { Linha = 5, Coluna = 10, Valor = "F", Color = Colors.LightGreen }, // 90
                 new() { Linha = 6, Coluna = 10, Valor = "1", Color = color },
                 new() { Linha = 7, Coluna = 10, Valor = "2", Color = color },
                 new() { Linha = 8, Coluna = 10, Valor = "3", Color = color },

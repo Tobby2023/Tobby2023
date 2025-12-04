@@ -1,0 +1,38 @@
+﻿@page "/"
+@using MauiNotification.Service
+@inject ISnackbar Snackbar
+@inject NotificationService Notify
+
+<MudStack Class="pa-2">
+    <MudTimePicker Label="24 hours" @bind-Time="_time" />
+
+    <MudStack Row Justify="Justify.SpaceBetween" Spacing="2">
+        <MudButton Variant="Variant.Filled" OnClick="Submet">ADD Alarme</MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="@(() => AddAlarme(DateTime.Now.AddSeconds(30)))">Alarme +30s</MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="@(() => AddAlarme(DateTime.Now.AddMinutes(1)))">Alarme +1min</MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="@(() => AddAlarme(DateTime.Now.AddMinutes(5)))">Alarme +5min</MudButton>
+    </MudStack>
+</MudStack>
+
+@code {
+    private TimeSpan? _time { get; set; } = TimeSpan.Zero;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _time = new(DateTime.Now.Hour, DateTime.Now.Minute, 0);
+    }
+
+    private async Task Submet()
+    {
+        DateTime Data = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+        Data = Data.Add(_time!.Value);
+        await AddAlarme(Data);
+    }
+
+    private async Task AddAlarme(DateTime Data)
+    {
+        await Notify.ScheduleNotification(Data);
+        Snackbar.Add($"Alerme: {Data.ToString("G")} adicionado.", Severity.Success);
+    }
+}

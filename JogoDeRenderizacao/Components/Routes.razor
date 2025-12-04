@@ -1,0 +1,36 @@
+﻿<Router AppAssembly="@typeof(MauiProgram).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+</Router>
+
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        string uri = string.Empty;
+        // Capturar o URI de abertura (quando o app é aberto por um link)
+        if (Preferences.ContainsKey("DeepLink"))
+        {
+            uri = Preferences.Get("DeepLink", "Nenhum link recebido");
+        }
+        else
+        {
+            uri = Navigation.Uri;
+        }
+
+        // Verificar se o URI é do seu esquema
+        if (uri.StartsWith("outroapp://"))
+        {
+            // Extrair parâmetros do URI
+            var uriObj = new Uri(uri);
+            var parametros = System.Web.HttpUtility.ParseQueryString(uriObj.Query);
+            var id = parametros["id"];
+
+            // Navegar para a página de detalhes
+            Navigation.NavigateTo($"/pagina-detalhes/{id}");
+        }
+
+        await base.OnInitializedAsync();
+    }
+}

@@ -1,0 +1,72 @@
+﻿@page "/"
+@using AppNotification.Components.Shared
+
+@if(result.Item1)
+{
+    <MudStack Spacing="0" Style="height: 100vh">
+        <MudStack Spacing="0" Style="height: calc(100vh - 300px)" Class="mud-width-full border border-solid mud-border-primary">
+
+            <!-- ADIVERSÁRO 1 -->
+            <MudStack Row Spacing="1" Wrap="Wrap.WrapReverse" AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height: 25vh" Class="pa-2 mud-width-full border border-solid mud-border-primary">
+                @if (Tabuleiro.Jogadores.Count > 1)
+                {
+                    foreach (var carta in Tabuleiro.Baralho.FindAll(c => c.EndsWith($",{Tabuleiro.Jogadores[Posicao == 1 ? 0 : Posicao]}")))
+                    {
+                        <Carta Value="@carta" Codigo="@MySocket.MeuCodigo()" Tabuleiro="Tabuleiro" Enviar="PartilharTabuleiro" />
+                    }
+                }
+            </MudStack>
+
+            <MudStack Row Spacing="0" Style="height: 75vh" Class="mud-width-full border border-solid mud-border-info">
+
+                <!-- ADIVERSÁRO 3 -->
+                <MudStack Row Spacing="1" Style="width: 25%; height: 100%" Class="border border-solid mud-border-primary">
+                </MudStack>
+
+                <!-- MESA DE CARTA JOGADAS -->
+                <MudStack Row Spacing="0" Style="width: 50%; height: 100%" Justify="Justify.SpaceBetween" Class="border border-solid mud-border-primary">
+
+                    <!-- CARTA JOGADA PARA 3 -->
+                    <MudStack Row Spacing="1" Style="height: 100%" Class="border border-solid mud-border-primary">
+                    </MudStack>
+
+                    <MudStack Spacing="0" Style="height: 100%" Class="border border-solid mud-border-primary">
+
+                        <!-- CARTA JOGADA PARA 1 -->
+                        <MudStack Row Spacing="1" Style="height: 100%" Class="border border-solid mud-border-primary">
+                        </MudStack>
+
+                        <!-- CARTA RESERVAS -->
+                        <MudStack Row Spacing="1" Style="height: 100%" Class="border border-solid mud-border-primary">
+                        </MudStack>
+
+                        <!-- CARTA JOGADA PARA MINHA -->
+                        <MudStack Row Spacing="1" Style="height: 100%" Class="border border-solid mud-border-primary">
+                        </MudStack>
+                    </MudStack>
+
+                    <!-- CARTA JOGADA PARA 2 -->
+                    <MudStack Row Spacing="1" Style="height: 100%" Class="border border-solid mud-border-primary">
+                    </MudStack>
+
+                </MudStack>
+
+                <!-- ADIVERSÁRO 2 -->
+                <MudStack Row Spacing="1" Style="width: 25%; height: 100%" Class="border border-solid mud-border-primary">
+                </MudStack>
+            </MudStack>
+        </MudStack>
+        <MudStack Row Spacing="3" Wrap="Wrap.Wrap" AlignItems="AlignItems.Center" Justify="Justify.Center" Style="height: 300px" Class="pa-2 mud-width-full border border-solid mud-border-primary">
+            @foreach (var carta in Tabuleiro.Baralho.FindAll(c => c.EndsWith($",{MySocket.MeuCodigo()}")))
+            {
+                <Carta Value="@carta" Codigo="@MySocket.MeuCodigo()" Tabuleiro="Tabuleiro" Enviar="PartilharTabuleiro" />
+            }
+        </MudStack>
+    </MudStack>
+}
+else
+{
+    <MudStack Spacing="0" Style="height: 100vh" AlignItems="AlignItems.Center" Justify="Justify.Center">
+        <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Iniciar">Iniciar</MudButton>
+    </MudStack>
+}

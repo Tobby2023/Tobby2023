@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using MauiWifiConecta.Modelo;
+using System.Net;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 
 namespace MauiWifiConecta.Service
 {
@@ -58,6 +60,34 @@ namespace MauiWifiConecta.Service
             }
         }
 
+        // Método que envia a mensagem
+        public async Task SendObjetoAsync(object message)
+        {
+            try
+            {
+                byte[]? messageBytes;
+                if (message is Jogador)
+                {
+                    var objetoMensagem = (Jogador)message;
+                    // Serializa o objeto MessageModel para JSON
+                    var messageJson = JsonSerializer.Serialize(objetoMensagem);
+                    messageBytes = Encoding.UTF8.GetBytes(messageJson);
+                }
+                else
+                {
+                    var objetoMensagem = (NanteCaminho)message;
+                    // Serializa o objeto MessageModel para JSON
+                    var messageJson = JsonSerializer.Serialize(objetoMensagem);
+                    messageBytes = Encoding.UTF8.GetBytes(messageJson);
+                }
+                await EuSocket.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                await App.Current!.MainPage!.DisplayAlert("Erro", "Ocorreu um erro: " + ex.Message, "Ok");
+            }
+        }
+
         // Método que aguarda e retorna a mensagem recebida
         public async Task<string> ReceiveMessageAsync()
         {
@@ -69,7 +99,28 @@ namespace MauiWifiConecta.Service
             return message;
         }
 
+        // Método que aguarda e retorna a mensagem recebida
+        public async Task<object?> ReceiveObjetoAsync()
+        {
+            var buffer = new byte[1024];
+            var result = await EuSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
+            if (result.MessageType == WebSocketMessageType.Text)
+            {
+                var messageJson = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                return JsonSerializer.Deserialize<Jogador>(messageJson);
+            }
+            else if (result.MessageType == WebSocketMessageType.Binary)
+            {
+                var messageJson = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                return JsonSerializer.Deserialize<Jogador>(messageJson);
+            }
+
+            var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
+
+            // Retorna a mensagem recebida
+            return message;
+        }
 
         // Processar as mensagens de um cliente conectado
         public async Task HandleClientSocketAsync(WebSocket socket)
@@ -99,9 +150,14 @@ namespace MauiWifiConecta.Service
             {
                 if (client.State == WebSocketState.Open)
                 {
-                    await client.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Text, true, CancellationToken.None);
+                    await client.SendAsync(new ArraySegment<byte>(messageBytes), WebSocketMessageType.Binary, true, CancellationToken.None);
                 }
             }
+        }
+
+        public void SaberQuantos()
+        {
+
         }
     }
 }

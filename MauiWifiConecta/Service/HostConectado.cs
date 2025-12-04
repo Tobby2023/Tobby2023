@@ -28,8 +28,12 @@ namespace MauiWifiConecta.Service
         {
             var profiles = Connectivity.ConnectionProfiles;
 
-            // Verifica se o dispositivo está conectado a uma rede Wi-Fi
-            return profiles.Contains(ConnectionProfile.WiFi);
+            if (DevicePlatform.Android == DeviceInfo.Platform)
+                // Verifica se o dispositivo está conectado a uma rede Wi-Fi
+                return profiles.Contains(ConnectionProfile.Cellular);
+            else
+                // Verifica se o dispositivo está conectado a uma rede Wi-Fi
+                return profiles.Contains(ConnectionProfile.WiFi);
         }
 
         public void GetLocalIPs()
@@ -40,7 +44,7 @@ namespace MauiWifiConecta.Service
                 if (DevicePlatform.Android == DeviceInfo.Platform)
                 {
                     if (ni.OperationalStatus == OperationalStatus.Up &&
-                        (ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet))
+                        (ni.NetworkInterfaceType == NetworkInterfaceType.Loopback))
                     {
                         foreach (UnicastIPAddressInformation ip in ni.GetIPProperties().UnicastAddresses)
                         {

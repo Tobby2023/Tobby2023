@@ -1,4 +1,5 @@
-﻿using MauiWifiConecta.Service;
+﻿using CommunityToolkit.Maui;
+using MauiWifiConecta.Service;
 using Microsoft.Extensions.Logging;
 
 namespace MauiWifiConecta
@@ -10,6 +11,7 @@ namespace MauiWifiConecta
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

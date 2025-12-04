@@ -1,0 +1,25 @@
+﻿@page "/counter"
+
+<h1>Counter</h1>
+
+<button class="btn btn-primary" @onclick="OpenOtherApp">Ligar</button>
+
+@code {
+    string uri = $"tel:{937882868}";
+
+    public async Task OpenOtherApp()
+    {
+        var appUri = "outroapp://"; // Substitua pelo URI ou esquema correto do outro app
+        var supportsUri = await Launcher.CanOpenAsync(uri);
+
+        if (supportsUri)
+        {
+            await Launcher.OpenAsync(uri);
+        }
+        else
+        {
+            // Caso o app não esteja instalado ou o URI não seja suportado
+            await Shell.Current.DisplayAlert("Erro", "O aplicativo não está instalado.", "OK");
+        }
+    }
+}

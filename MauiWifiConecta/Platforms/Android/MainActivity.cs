@@ -1,9 +1,7 @@
 ﻿using Android.App;
-using Android.Content;
 using Android.Content.PM;
 using Android.Net;
-using Android.Net.Wifi;
-using Java.Lang.Reflect;
+using Android.OS;
 
 namespace MauiWifiConecta
 {
@@ -17,7 +15,7 @@ namespace MauiWifiConecta
 
         public static string GetGatewayAddress()
         {
-            var connectivityManager = (ConnectivityManager)Contexto.GetSystemService(ConnectivityService);
+            var connectivityManager = (ConnectivityManager)Contexto.GetSystemService(ConnectivityService)!;
             var linkProperties = connectivityManager.GetLinkProperties(connectivityManager.ActiveNetwork);
 
             foreach (var route in linkProperties.Routes)

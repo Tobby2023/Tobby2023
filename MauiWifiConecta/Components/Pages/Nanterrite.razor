@@ -8,7 +8,9 @@
 }
 else
 {
-    <button @onclick="IniciarCliente" class="btn btn-sm btn-danger"><i class="bi bi-power"></i></button>
+    <div class="d-flex align-items-center align-content-center h-100">
+        <button @onclick="IniciarCliente" class="btn btn-sm btn-danger"><i class="bi bi-power"></i></button>
+    </div>
 }
 
 
@@ -17,7 +19,8 @@ else
     public string Modo { get; set; } = string.Empty;
     [Parameter]
     public int Index { get; set; } = 0;
-    private string texto = string.Empty;
+
+    private Jogador? EuJogador;
     private bool IsIniciado = false;
 
     public string Mensagem { get; set; } = string.Empty;
@@ -50,6 +53,7 @@ else
             MySocket.EuSocket = new System.Net.WebSockets.ClientWebSocket();
             await MySocket.EuSocket.ConnectAsync(new Uri($"ws://{MyHost.MeuHost[0]}:1909/"), CancellationToken.None);
             IsIniciado = !IsIniciado;
+
             _ = Task.Run(() => SegundoPlanoCliente(true));
             await InvokeAsync(StateHasChanged);
         }

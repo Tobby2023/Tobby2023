@@ -1,0 +1,79 @@
+﻿@page "/vosk-demo"
+@inject AudioService AudioService
+@implements IDisposable
+
+<h3>Reconhecimento e Síntese de Voz com Vosk</h3>
+
+<button @onclick="StartListening" class="btn btn-primary">Iniciar Reconhecimento</button>
+<button @onclick="StopListening" class="btn btn-secondary">Parar Reconhecimento</button>
+<button @onclick="SpeakText" class="btn btn-success">Falar Texto</button>
+
+<div class="form-group">
+    <label>Velocidade</label>
+    <input type="range" min="50" max="200" @bind="Rate" />
+    <span>@Rate%</span>
+</div>
+
+<div class="form-group">
+    <label>Volume</label>
+    <input type="range" min="0" max="100" @bind="Volume" />
+    <span>@Volume%</span>
+</div>
+
+<div class="mt-3">
+    <textarea @bind="TextToSpeak" class="form-control" rows="3"></textarea>
+</div>
+
+<p class="mt-3">Resultado Parcial: @PartialResult</p>
+<p>Resultado Final: @FinalResult</p>
+
+@code {
+    private int Rate { get; set; } = 100;
+    private int Volume { get; set; } = 100;
+    private string PartialResult = string.Empty;
+    private string FinalResult = string.Empty;
+    private string TextToSpeak = "Digite algo para eu falar, Tobby";
+
+    protected override void OnInitialized()
+    {
+        AudioService.RecognitionResultUpdated += OnPartialResult;
+        AudioService.FinalResultReceived += OnFinalResult;
+    }
+
+    private void OnPartialResult(string result)
+    {
+        PartialResult = result;
+        TextToSpeak = result;
+        StateHasChanged();
+    }
+
+    private void OnFinalResult(string result)
+    {
+        FinalResult = result;
+        TextToSpeak = result;
+        StateHasChanged();
+    }
+
+    private async Task StartListening()
+    {
+        await AudioService.StartListeningAsync();
+    }
+
+    private void StopListening()
+    {
+        AudioService.StopListening();
+    }
+
+    private void SpeakText()
+    {
+        AudioService.SetRate(Rate);
+        AudioService.SetVolume(Volume);
+        AudioService.Speak(TextToSpeak);
+    }
+
+    public void Dispose()
+    {
+        AudioService.RecognitionResultUpdated -= OnPartialResult;
+        AudioService.FinalResultReceived -= OnFinalResult;
+    }
+}

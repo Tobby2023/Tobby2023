@@ -90,6 +90,7 @@ else
         {
             Mensagem = await MySocket.ReceiveMessageAsync();
             await InvokeAsync(StateHasChanged);
+            await Task.Delay(TimeSpan.FromSeconds(1));
         }
     }
 }

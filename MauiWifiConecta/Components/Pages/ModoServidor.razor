@@ -19,6 +19,7 @@
     protected override async Task OnInitializedAsync()
     {
         IP = (string.IsNullOrEmpty(IP) ? (await App.Current!.MainPage!.DisplayPromptAsync("IP Indefinido", "Digite manualmente seu IP:", "OK", "CANCELA")) : IP);
+        await App.Current!.MainPage!.DisplayAlert("IP", IP, "OK");
         await Servidor.StartWebSocketServerAsync(IP, Port);
         _ = Task.Run(Atualiza);
     }

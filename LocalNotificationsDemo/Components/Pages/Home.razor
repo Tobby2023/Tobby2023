@@ -1,0 +1,37 @@
+﻿@page "/"
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+#if ANDROID
+    if (!LocalNotificationsDemo.Platforms.Android.AndroidServiceManager.IsRunning)
+    {
+    LocalNotificationsDemo.Platforms.Android.AndroidServiceManager.StartMyService();
+    await App.Current!.MainPage!.DisplayAlert("Estado", "Serviço funcionando!", "OK");
+    }
+    else
+    {
+    await App.Current!.MainPage!.DisplayAlert("Estado", "Serviço já estava funcionando!", "OK");
+    }
+#endif
+        }
+        catch (Exception ex)
+        {
+            await App.Current!.MainPage!.DisplayAlert("Estado", ex.Message, "OK");
+        }
+    }
+
+    private async Task Parar()
+    {
+        #if ANDROID
+        LocalNotificationsDemo.Platforms.Android.AndroidServiceManager.StopMyService();
+        await App.Current!.MainPage!.DisplayAlert("Estado", "Serviço parado!", "OK");
+        #endif
+    }
+}
